@@ -51,6 +51,12 @@ module.exports.routes = {
   // Notes //
   "post /api/notes"   : "api/NotesController.create",
   "get /api/notes"   : "api/NotesController.read",
-  "put /api/notes"     : "api/NotesController.update",
-  "delete /api/notes"  : "api/NotesController.delete",
+  "put /api/notes/:id"     : "api/NotesController.update",
+  "delete /api/notes/:id"  : "api/NotesController.delete",
+
+  // Todos //
+  "post /api/todos"   : "api/TodosController.create",
+  "get /api/todos"   : "api/TodosController.read",
+  "put /api/todos/:id"     : "api/TodosController.update",
+  "delete /api/todos/:id"  : "api/TodosController.delete",
 };

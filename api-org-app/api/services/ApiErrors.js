@@ -6,6 +6,13 @@ var ApiErrors = {
       message: "Bad Request"
     }
   },
+  resource_not_found: {
+    http_status: 404,
+    response: {
+      code: -101,
+      message: "Resource Not Found"
+    }
+  },
   database_error: {
     http_status: 503,
     response: {

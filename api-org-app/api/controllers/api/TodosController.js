@@ -2,24 +2,19 @@ module.exports = {
   create : function(req, res) {
     async.auto({
       prepareParams: function(callback) {
-        var note = {};
+        var todo = {};
 
-        if (req.body.title) {
-          note.title = req.body.title;
-        } else {
-          return callback(ApiErrors.bad_request);
-        }
         if (req.body.text) {
-          note.text = req.body.text;
+          todo.text = req.body.text;
         } else {
           return callback(ApiErrors.bad_request);
         }
-        
-        callback(null, note);
+
+        callback(null, todo);
       },
 
       createEntry: ["prepareParams", function(callback, result) {
-        Notes.create(result.prepareParams, function(err) {
+        Todos.create(result.prepareParams, function(err) {
           if (err) {
             return callback(ApiErrors.database_error);
           }
@@ -39,10 +34,10 @@ module.exports = {
   },
 
   read : function(req, res) {
-    var query = "SELECT id, title, text, created_at, updated_at " +
-                "FROM notes " +
-                "ORDER BY updated_at DESC;";
-    Notes.query(query, function(err, list) {
+    var query = "SELECT id, text, done, created_at, updated_at " +
+                "FROM todos " +
+                "ORDER BY created_at ASC;";
+    Todos.query(query, function(err, list) {
       if (err) {
         return res.status(ApiErrors.database_error.http_status)
                   .json(ApiErrors.database_error.response);
@@ -55,18 +50,18 @@ module.exports = {
   update : function(req, res) {
     async.auto({
       prepareParams: function(callback) {
-        var note = {};
+        var todo = {};
 
-        if (req.body.title) {
-          note.title = req.body.title;
-        }
         if (req.body.text) {
-          note.text = req.body.text;
+          todo.title = req.body.title;
+        }
+        if (req.body.done && typeof(req.body.done) === "boolean") {
+          todo.text = req.body.text;
         }
 
-        if (!JsonUtils.isEmpty(note)) {
-          note.updated_at = new Date();
-          return callback(null, note);
+        if (!JsonUtils.isEmpty(todo)) {
+          todo.updated_at = new Date();
+          return callback(null, todo);
         } else {
           return callback(ApiErrors.bad_request);
         }
@@ -75,7 +70,7 @@ module.exports = {
       updateEntry: ["prepareParams", function(callback, result) {
         var query = {};
         query.id = req.params.id;
-        Notes.update(query, result.prepareParams, function(err, updatedRecords) {
+        Todos.update(query, result.prepareParams, function(err, updatedRecords) {
           if (err) {
             return callback(ApiErrors.database_error);
           }
@@ -101,7 +96,7 @@ module.exports = {
   delete : function(req, res) {
     var query = {};
     query.id = req.params.id;
-    Notes.destroy(query, function(err, deletedRecords) {
+    Todos.destroy(query, function(err, deletedRecords) {
       if (err) {
         return res.status(ApiErrors.database_error.http_status)
                   .json(ApiErrors.database_error.response);
